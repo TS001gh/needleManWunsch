@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static',filename='css/main.css') }}"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65"
+      crossorigin="anonymous"
+    />
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
+      crossorigin="anonymous"
+    ></script>
+    <title>Document</title>
+  </head>
+  <body>
+    <div class="row p-5 text-danger answerList d-none">{{answerList}}</div>
+    <div class="row"></div>
+    <input type="hidden" class="chunkSize" value="{{score_matrix[0]}}" />
+    <div class="container bg-primary">
+      <div class="row justify-contenet-center">
+        <div class="haeder px-5 py-3 bg-info h1 text-white text-center">
+          NeedleMan Wunsch Algorithim
+        </div>
+      </div>
+      <div class="row">
+        <span> {{tip}} </span>
+      </div>
+      <div class="row">
+        <div class="col-6">
+          <form action="/" method="post" class="p-3">
+            <div class="mb-3 col-12 col-md-6">
+              <label for="matchId" class="form-label">Match</label>
+              <input
+                type="number"
+                name="match"
+                id="matchId"
+                class="form-control"
+                required
+                value="{{match_score}}"
+              />
+            </div>
+            <div class="mb-3 col-12 col-md-6">
+              <label for="misMatchId" class="form-label">Mismatch</label>
+              <input
+                type="number"
+                name="mis_match"
+                id="misMatchId"
+                class="form-control"
+                required
+                value="{{mismatch_score}}"
+              />
+            </div>
+            <div class="mb-3 col-12 col-md-6">
+              <label for="gapVal" class="form-label">Gap</label>
+              <input
+                type="number"
+                name="gapVal"
+                id="gapVal"
+                class="form-control"
+                required
+              />
+            </div>
+            <button type="submit" class="btn btn-primary">Hesapla</button>
+          </form>
+        </div>
+        <div class="col-6 p-3">
+          <div class="row">
+            <div class="col-4">
+              <div class="mb-3">
+                <label for="matchLabel" class="form-label">Match Value</label>
+                <input
+                  type="text"
+                  id="matchLabel"
+                  class="form-control"
+                  disabled
+                  value="{{match_score}}"
+                />
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="mb-3">
+                <label for="mis_matchLabel" class="form-label"
+                  >Mis Match Value</label
+                >
+                <input
+                  type="text"
+                  id="mis_matchLabel"
+                  class="form-control"
+                  disabled
+                  value="{{mismatch_score}}"
+                />
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="mb-3">
+                <label for="timeLabel" class="form-label">Time in MS</label>
+                <input
+                  type="text"
+                  id="timeLabel"
+                  class="form-control"
+                  disabled
+                  value="{{tim}}"
+                />
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-6">
+              <div class="mb-3">
+                <label for="seq1" class="form-label">Aligned Sequence-1</label>
+                <input
+                  type="text"
+                  id="seq2"
+                  class="form-control"
+                  disabled
+                  value="{{mainarr[0]}}"
+                />
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="mb-3">
+                <label for="seq2" class="form-label">Aligned Sequence-2</label>
+                <input
+                  type="text"
+                  id="seq2"
+                  class="form-control"
+                  disabled
+                  value="{{mainarr[1]}}"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-10">
+          <table class="table bg-info">
+            <thead>
+              <tr>
+                <th class="col">#</th>
+                {% for harf in seq2 %}
+                <th class="col">{{harf}}</th>
+                {% endfor %}
+              </tr>
+            </thead>
+            <tbody class="border-2 border-danger rounded-2">
+              <tr class="sideTable">
+                <th class="row">#</th>
+                {% for harf in seq1 %}
+                <th class="row">{{harf}}</th>
+                {% endfor %}
+              </tr>
+              {% for skill in score_matrix %}
+              <tr
+                class="unsur"
+                style="display: flex; gap: 3px; flex-wrap: nowrap"
+              >
+                {% for i in skill %}
+                <td>{{i}}</td>
+                {% endfor %}
+              </tr>
+
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        <div class="col-2">
+          <div class="row justify-content-center">
+            Score is
+            <h1 class="text-center">
+              <span class="badge bg-info"><span>{{score}}</span></span>
+            </h1>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      score_matrix = [];
+      document.querySelectorAll(".unsur td").forEach((element) => {
+        score_matrix.push(element);
+      });
+      let chunkSize = document
+        .querySelector(".chunkSize")
+        .value.slice(1, -1)
+        .split(",");
+      chunkSize = chunkSize.length;
+      mainMatrix = [];
+      for (let i = 0; i < score_matrix.length; i += chunkSize) {
+        const chunk = score_matrix.slice(i, i + chunkSize);
+        mainMatrix.push(chunk);
+      }
+      {
+        let answerList = Array(
+          document
+            .querySelector(".answerList")
+            .textContent.slice(1, -1)
+            .split(", [")
+        );
+        answerListTwo = [];
+        answerList.forEach((element, index) => {
+          for (let i = 0; i < element.length; i++) {
+            if (i !== 0) {
+              answerListTwo.push("[" + element[i]);
+            }
+          }
+        });
+      }
+      console.log(answerListTwo);
+
+      console.log(mainMatrix.length);
+
+      for (let i = 0; i < answerListTwo.length; i++) {
+        let x = answerListTwo[i].split(",")[0].slice(1);
+        let y = answerListTwo[i].split(",")[1].slice(1, -1);
+        console.log([x, y]);
+        mainMatrix[x][y].style.backgroundColor = "#f19bb8";
+      }
+    </script>
+    <!-- answerListTwo.forEach((ele) => {
+      for (let i = 0; i < mainMatrix.length; i++) {
+        for (let j = 0; j < mainMatrix.length; j++) {
+          if (("[" + i + "," + " " + j + "]").toString() == ele.toString())
+            console.log("[" + i + "," + " " + j + "]" + "=>" + ele);
+        }
+      }
+    }); -->
+  </body>
+  <!--  -->
+</html>
